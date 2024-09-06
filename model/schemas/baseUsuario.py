@@ -9,5 +9,4 @@ class baseUser(BaseModel):
     fecha: str
     idrol: int
     menu: str
-    
-    
+
