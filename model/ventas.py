@@ -40,3 +40,5 @@ class Venta:
 
     def MaestroVentas():
         pass
+
+    #prueba de git
