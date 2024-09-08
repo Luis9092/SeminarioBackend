@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response
 from typing import List
 from database import conexiondb
-from model.schemas import baseUsuario
+from model.schemas import baseUsuario, BaseVentas
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
@@ -11,9 +11,11 @@ from starlette.status import (
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from model.usuarios import Usuario
+from model.ventas import Venta
 
 api = APIRouter()
 user = Usuario()
+venta = Venta()
 
 
 @api.get("/")
@@ -52,3 +54,15 @@ def autenticarUsuario(correo: str, pasw: str):
         return retorno1
     else:
         return Response(status_code=HTTP_400_BAD_REQUEST)
+
+
+# ------- SELLS SECTIONS IS BEING DEVELOPED HERE -start- ------- #
+
+@api.post("/HacerVenta/<ClienteId><FechaVenta><Total>", response_model=BaseVentas.BaseVenta)
+def InsertVenta(ClienteId:str, Total:str):
+    Date = datetime.now()
+    CurrentDate = Date.strftime("%d/%m/%Y %H:%M:%S")
+    venta.VentasConstructor(ClienteId, CurrentDate, Total)
+    venta.InsertVenta()
+
+# ------- SELLS SECTIONS IS BEING DEVELOPED HERE -finish- ------- #

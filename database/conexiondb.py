@@ -1,5 +1,5 @@
 import pyodbc
-server = 'ARMAGEDON12'
+server = 'DESKTOP-LNOKM7P\SQLEXPRESS'
 bd = 'FerreteriaDB'
 user = 'usuarioFerreteria'
 password = 'casa_12345'
