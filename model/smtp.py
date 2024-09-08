@@ -18,7 +18,7 @@ def enviar_correo_contraseña(email_destino, contraseña, email_origen, contrase
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
 
-# Ejemplo de uso
+# Ejemplo de usojj
 email_destino = 'jgodoym11@miumg.edu.gt'
 contraseña = 'nxck wrvo rlgc vaeh'
 email_origen = 'ferreteriagodoys@gmail.com'

@@ -74,17 +74,11 @@ class Usuario:
         else:
             retorno = HTTP_400_BAD_REQUEST
         return retorno
-
-        # <li title="Existencias" id="existencias">
-        #   <a href="#">
-        #     <i class="bx bxs-doughnut-chart"></i>
-        #     <span class="text">Existencias</span>
-        #   </a>
-        # </li>
+ 
 
     def construirMenu(self, role, id, nombres, apellidos, correo):
         ss = conexion.cursor()
-        query = "select * from menu where idRole = " + role + ""
+        query = "select * from menu where idRole = " + str(role) + ""
         retorno = ss.execute(query)
         ver = retorno.fetchall()
         dictPerfil = {}
