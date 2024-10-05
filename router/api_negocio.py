@@ -1,3 +1,9 @@
+from model.schemas import BaseLuis
+from model.productos import Producto
+from model.categoria import Categoria
+from model.proveedores import Proveedor
+import os
+from fastapi import APIRouter, Response, Form, File, UploadFile
 from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel
 from typing import List
@@ -170,5 +176,115 @@ def eliminar_usuario(usuario_id: int):
     conexiondb.conexion.commit()
 
     return {"message": f"Usuario {usuario_id} eliminado correctamente"}
+
+@api.post("/agregarProducto")
+async def agregarProducto(
+    file: UploadFile = File(...),  # Para recibir el archivo
+    nombre: str = Form(...),  # Primer parámetro
+    descripcion: str = Form(...),
+    precio: float = Form(...),
+    proveedorid: int = Form(...),
+    idcategoria: int = Form(...),
+):
+
+    pro = Producto()
+
+    tiempo = datetime.now()
+    horaActual = tiempo.strftime("%d/%m/%Y %H:%M:%S")
+    precioVenta = precio + (precio * 1) / 150
+
+    ruta = os.path.join(os.getcwd(), "imagenServer", file.filename)
+    os.makedirs(os.path.dirname(ruta), exist_ok=True)
+
+    # Abre el archivo para escribir
+    with open(ruta, "wb") as myfile:
+        content = await file.read()
+        myfile.write(content)
+
+    # Aquí puedes realizar acciones adicionales con el archivo cerrado
+    retorno = pro.subir_imagen(nombre_imagen=file.filename, ruta_imagen=ruta)
+    if retorno != 0:
+        pro.ConsProducto(
+            idproducto=0,
+            nombre= nombre,
+            descripcion=descripcion,
+            precio=precio,
+            cantidad=0,
+            proveedorid=proveedorid,
+            fechaingreso=horaActual,
+            imagen=retorno,
+            idcategoria=idcategoria,
+            precioventa=precioVenta,
+        )
+        retorno2 = pro.crearProducto()
+        if retorno2 == 1:
+            return Response(status_code=HTTP_200_OK)
+
+    return Response(status_code=HTTP_204_NO_CONTENT)
+
+@api.get("/verProductor", response_model= list[BaseLuis.BaseProductos])
+def verProductos():
+    pr = Producto()
+    retorno = pr.VerProductos()
+    if retorno !=0:
+        return retorno
+    return Response(status_code= HTTP_404_NOT_FOUND)
+
+
+@api.delete("/eliminarimagenServer/{name_file}")
+def eliminarResultadoServer(name_file: str):
+    ruta = "imagenServer/" + name_file
+    try:
+        if os.path.isfile(ruta):
+            os.remove(ruta)
+            # print(f"Archivo eliminado: {ruta}")
+            return Response(status_code=HTTP_200_OK)
+        else:
+            # print(f"Error: El archivo no existe: {ruta}")
+            return Response(status_code=HTTP_404_NOT_FOUND)
+    except Exception as e:
+        # print(f"Error al eliminar el archivo: {e}")
+        return Response(status_code=HTTP_404_NOT_FOUND)
+
+
+@api.get("/vercategoria", response_model=list[BaseLuis.BaseCategoria])
+def verCategoria():
+    ca = Categoria()
+    retorno = ca.vercategorias()
+    if retorno != 0:
+        return retorno
+    return Response(status_code=HTTP_400_BAD_REQUEST)
+
+
+@api.post("/crearCategoria")
+def crearCategoria(lista: BaseLuis.BaseCategoria):
+    ca = Categoria()
+    retorno = ca.agregarCategoria(categoria=lista.categoria)
+    if retorno == 1:
+        return Response(status_code=HTTP_200_OK)
+
+    return Response(status_code=HTTP_400_BAD_REQUEST)
+
+
+@api.get("/verProveedores", response_model=list[BaseLuis.BaseProveedores])
+def verProveedores():
+    pr = Proveedor()
+
+    retorno = pr.verProveedores()
+    if retorno != 0:
+        return retorno
+    return Response(status_code=HTTP_400_BAD_REQUEST)
+
+
+@api.post("/crearProveedor")
+def crearProveedor(lista: BaseLuis.BaseProveedores):
+    pr = Proveedor()
+    retorno = pr.agregarProveedor(
+        nombre=lista.nombre, telefono=lista.telefono, email=lista.email
+    )
+    if retorno == 1:
+        return Response(status_code=HTTP_200_OK)
+
+    return Response(status_code=HTTP_404_NOT_FOUND)
 
 
