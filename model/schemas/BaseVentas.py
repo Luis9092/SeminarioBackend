@@ -1,16 +1,15 @@
 from pydantic import BaseModel
+from typing import List
 
-class BaseVenta(BaseModel):
-    #Venta
-    ClienteId: str
-    FechaVenta: str
-    Total: str
+class DetalleVenta(BaseModel):
+    ProductoId: int
+    Cantidad: int
+    PrecioUnitario: float
+    EmpleadoId: int
 
-    #Detalle Venta
-    DetalleId: str
-    VentaId:str 
-    ProductoId:str
-    Cantidad:str
-    PrecioUnitario:str
-    EmpleadoId:str
+class Model_Venta(BaseModel):
+    ClienteID: int
+    FechaVenta: str  # Puedes usar datetime si deseas un formato más estricto
+    Total: float
+    Detalles: List[DetalleVenta]
 

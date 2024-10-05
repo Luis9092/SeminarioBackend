@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel
 from typing import List
 from database import conexiondb
-from model.schemas import baseUsuario, BaseVentas
+from model.schemas import baseUsuario
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
@@ -13,7 +13,12 @@ from starlette.status import (
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from model.usuarios import Usuario
+
+#----------- FOR SELLS MODULE ------------#
 from model.ventas import Venta
+from model.schemas import BaseVentas
+from model.schemas.BaseVentas import Model_Venta
+#----------- FOR SELLS MODULE ------------#
 
 api = APIRouter()
 user = Usuario()
@@ -47,6 +52,7 @@ class Rol(BaseModel):
     
 class RolUpdate(BaseModel):
     nuevo_rol: str
+
 
 @api.get("/")
 def root():
@@ -88,13 +94,29 @@ def autenticarUsuario(correo: str, pasw: str):
 
 # ------- SELLS SECTIONS IS BEING DEVELOPED HERE -start- ------- #
 
-@api.post("/HacerVenta/<ClienteId><FechaVenta><Total>", response_model=BaseVentas.BaseVenta)
-def InsertVenta(ClienteId:str, Total:str):
-    Date = datetime.now()
-    CurrentDate = Date.strftime("%d/%m/%Y %H:%M:%S")
-    venta.VentasConstructor(ClienteId, CurrentDate, Total)
-    venta.InsertVenta()
+@api.post("/crearVenta")  
+def crearVenta(venta: BaseVentas.Model_Venta):
+    # Crear la instancia de Venta
+    venta_model = Venta()
+    
+    # Asignar los datos de la venta principal
+    venta_model.constructorVenta(venta.ClienteID, venta.FechaVenta, venta.Total, venta.Detalles)
 
+    # Crear la venta y obtener el ID de la venta creada
+    venta_id = venta_model.crearVenta()
+
+    return {"message": "Venta creada con éxito", "VentaID": venta_id}
+
+
+
+
+@api.get("/obtenerVenta/{venta_id}")
+def obtenerVenta(venta_id: int):
+    venta_info = venta.obtenerVentaPorId(venta_id)
+    if venta_info:
+        return venta_info
+    else:
+        return Response(status_code=HTTP_400_BAD_REQUEST)
 # ------- SELLS SECTIONS IS BEING DEVELOPED HERE -finish- ------- #
 
 @api.get("/usuarios", response_model=List[BaseUsuario])

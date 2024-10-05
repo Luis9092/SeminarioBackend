@@ -1,8 +1,8 @@
 import pyodbc
-server = 'localhost'
+server = 'DESKTOP-LNOKM7P\SQLEXPRESS'
 bd = 'FerreteriaDB'
-user = 'oliver'
-password = '12345'
+user = 'usuarioFerreteria'
+password = 'casa_12345'
 
 try:
     conexion = pyodbc.connect('DRIVER={SQL Server}; SERVER=' +
