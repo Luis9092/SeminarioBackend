@@ -287,4 +287,26 @@ def crearProveedor(lista: BaseLuis.BaseProveedores):
 
     return Response(status_code=HTTP_404_NOT_FOUND)
 
+@api.put("/actualizarProveedor/{proveedor_id}")
+def actualizarProveedor(proveedor_id: int, lista: BaseLuis.BaseProveedores):
+    pr = Proveedor()
+    retorno = pr.actualizarProveedor(
+        idProveedor=proveedor_id,
+        nombre=lista.nombre,
+        telefono=lista.telefono,
+        email=lista.email
+    )
+    if retorno == 1:
+        return Response(status_code=HTTP_200_OK)
+    return Response(status_code=HTTP_400_BAD_REQUEST)
+
+@api.delete("/eliminarProveedor/{proveedor_id}")
+def eliminarProveedor(proveedor_id: int):
+    pr = Proveedor()
+    retorno = pr.eliminarProveedor(proveedor_id)
+    if retorno == 1:
+        return {"message": f"Proveedor {proveedor_id} eliminado correctamente"}
+    return Response(status_code=HTTP_404_NOT_FOUND)
+
+
 

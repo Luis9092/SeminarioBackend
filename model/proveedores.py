@@ -37,3 +37,30 @@ class Proveedor:
         except Exception as e:
             print(f"Ocurrió un error: {e}")
             return 0
+    
+    def actualizarProveedor(self, idProveedor, nombre, telefono, email):
+        try:
+            cn = conexion.cursor()
+            query = """
+            UPDATE Proveedores
+            SET Nombre = ?, Telefono = ?, Email = ?
+            WHERE ProveedorID = ?
+            """
+            cn.execute(query, (nombre, telefono, email, idProveedor))
+            conexion.commit()
+            return 1
+        except Exception as e:
+            print(f"Ocurrió un error: {e}")
+            return 0
+        
+    def eliminarProveedor(self, idProveedor):
+        try:
+            cn = conexion.cursor()
+            query = "DELETE FROM Proveedores WHERE ProveedorID = ?"
+            cn.execute(query, (idProveedor,))
+            conexion.commit()
+            return 1
+        except Exception as e:
+            print(f"Ocurrió un error: {e}")
+            return 0
+
