@@ -45,3 +45,37 @@ class Venta:
     
         conexion.commit()
         return venta_id  # Retorna el ID de la venta recién creada
+
+    def obtenerVentaPorId(self, venta_id):
+        cn = conexion.cursor()
+
+        # Obtener la venta con el ID proporcionado
+        query_venta = "SELECT VentaId, ClienteID, FechaVenta, Total FROM ventas WHERE VentaId = ?"
+        cn.execute(query_venta, (venta_id,))
+        venta = cn.fetchone()
+
+        if not venta:
+            return None  # Si no encuentra la venta, retorna None
+
+        # Obtener los detalles de la venta
+        query_detalles = """SELECT ProductoId, Cantidad, PrecioUnitario, EmpleadoId 
+                            FROM DetallesVenta WHERE VentaId = ?"""
+        cn.execute(query_detalles, (venta_id,))
+        detalles = cn.fetchall()
+
+        # Retornar la venta y sus detalles
+        return {
+            "VentaId": venta[0],
+            "ClienteID": venta[1],
+            "FechaVenta": venta[2],
+            "Total": venta[3],
+            "Detalles": [
+                {
+                    "ProductoId": detalle[0],
+                    "Cantidad": detalle[1],
+                    "PrecioUnitario": detalle[2],
+                    "EmpleadoId": detalle[3]
+                }
+                for detalle in detalles
+            ]
+        }

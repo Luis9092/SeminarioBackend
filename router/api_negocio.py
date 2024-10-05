@@ -328,7 +328,7 @@ def eliminarProveedor(proveedor_id: int):
     retorno = pr.eliminarProveedor(proveedor_id)
     if retorno == 1:
         return {"message": f"Proveedor {proveedor_id} eliminado correctamente"}
-    return Response(status_code=HTTP_404_NOT_FOUND)
+    return Response(status_code=HTTP_400_BAD_REQUEST)
 
 
 
