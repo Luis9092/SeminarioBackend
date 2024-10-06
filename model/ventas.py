@@ -79,3 +79,60 @@ class Venta:
                 for detalle in detalles
             ]
         }
+    
+    def eliminarVenta(self, venta_id):
+        cn = conexion.cursor()
+
+        try:
+            # Eliminar los detalles de la venta primero
+            query_detalle = "DELETE FROM DetallesVenta WHERE VentaId = ?"
+            cn.execute(query_detalle, (venta_id,))
+            
+            # Luego eliminar la venta principal
+            query_venta = "DELETE FROM Ventas WHERE VentaId = ?"
+            cn.execute(query_venta, (venta_id,))
+            
+            conexion.commit()  # Hacemos commit de la transacción
+
+            return {"message": "Venta y detalles eliminados con éxito", "VentaID": venta_id}
+
+        except Exception as e:
+            conexion.rollback()  # En caso de error, deshacer cambios
+            return {"error": str(e), "message": "Error al eliminar la venta"}
+        
+
+
+    def actualizarVenta(self, venta_id, cliente_id, fecha_venta, total, detalles):
+        cn = conexion.cursor()
+        try:
+            # Actualizar la venta principal
+            query = "UPDATE Ventas SET ClienteID = ?, FechaVenta = ?, Total = ? WHERE VentaId = ?"
+            cn.execute(query, (cliente_id, fecha_venta, total, venta_id))
+
+            # Eliminar los detalles actuales de la venta
+            query_eliminar_detalles = "DELETE FROM DetallesVenta WHERE VentaId = ?"
+            cn.execute(query_eliminar_detalles, (venta_id,))
+
+            # Insertar los nuevos detalles de la venta
+            for detalle in detalles:
+                query_insertar_detalle = """
+                    INSERT INTO DetallesVenta (VentaId, ProductoId, Cantidad, PrecioUnitario, EmpleadoId) 
+                    VALUES (?, ?, ?, ?, ?)
+                """
+                cn.execute(
+                    query_insertar_detalle,
+                    (
+                        venta_id,
+                        detalle['ProductoId'],
+                        detalle['Cantidad'],
+                        detalle['PrecioUnitario'],
+                        detalle['EmpleadoId'],
+                    ),
+                )
+
+            conexion.commit()
+            return {"message": "Venta actualizada con éxito"}
+
+        except Exception as e:
+            conexion.rollback()  # Deshacer cambios en caso de error
+            return {"message": f"Error al actualizar la venta: {str(e)}"}

@@ -123,6 +123,42 @@ def obtenerVenta(venta_id: int):
         return venta_info
     else:
         return Response(status_code=HTTP_400_BAD_REQUEST)
+    
+
+
+@api.delete("/eliminarVenta/{venta_id}")
+def eliminarVenta(venta_id: int):
+    venta_model = Venta()
+    resultado = venta_model.eliminarVenta(venta_id)
+
+    if "error" in resultado:
+        return {"message": "Error al eliminar la venta", "error": resultado["error"]}
+    
+    return {"message": "Venta eliminada con éxito", "VentaID": resultado["VentaID"]}
+
+
+
+@api.put("/actualizarVenta/{venta_id}")
+def actualizarVenta(venta_id: int, venta: BaseVentas.Model_Venta):
+    venta_model = Venta()
+    
+    # Llamar al método actualizarVenta del modelo y pasarle los datos
+    response = venta_model.actualizarVenta(
+        venta_id=venta_id,
+        cliente_id=venta.ClienteID,
+        fecha_venta=venta.FechaVenta,
+        total=venta.Total,
+        detalles=[{
+            'ProductoId': detalle.ProductoId,
+            'Cantidad': detalle.Cantidad,
+            'PrecioUnitario': detalle.PrecioUnitario,
+            'EmpleadoId': detalle.EmpleadoId
+        } for detalle in venta.Detalles]
+    )
+
+    return response
+
+
 # ------- SELLS SECTIONS IS BEING DEVELOPED HERE -finish- ------- #
 
 @api.get("/usuarios", response_model=List[BaseUsuario])
