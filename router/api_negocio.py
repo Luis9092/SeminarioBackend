@@ -158,6 +158,14 @@ def actualizarVenta(venta_id: int, venta: BaseVentas.Model_Venta):
 
     return response
 
+@api.get("/ventas")
+def obtenerSoloVentas():
+    venta_model = Venta()
+
+    # Llamamos al método que obtiene las ventas
+    ventas = venta_model.obtenerSoloVentas()
+
+    return {"ventas": ventas}
 
 # ------- SELLS SECTIONS IS BEING DEVELOPED HERE -finish- ------- #
 

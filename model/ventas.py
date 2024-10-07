@@ -136,3 +136,28 @@ class Venta:
         except Exception as e:
             conexion.rollback()  # Deshacer cambios en caso de error
             return {"message": f"Error al actualizar la venta: {str(e)}"}
+        
+    
+
+    def obtenerSoloVentas(self):
+        cn = conexion.cursor()
+
+        # Consulta para obtener los campos VentaId, ClienteId, FechaVenta, y Total
+        query = "SELECT VentaId, ClienteID, FechaVenta, Total FROM ventas"
+        cn.execute(query)
+
+        # Obtener todas las filas del resultado
+        ventas = cn.fetchall()
+
+        # Formatear los resultados en una lista de diccionarios
+        resultado = [
+            {
+                "VentaId": venta[0],
+                "ClienteID": venta[1],
+                "FechaVenta": venta[2],
+                "Total": venta[3]
+            }
+            for venta in ventas
+        ]
+
+        return resultado
